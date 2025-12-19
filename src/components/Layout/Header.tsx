@@ -12,14 +12,17 @@ export default function Header() {
     if (path === '/') {
       return location.pathname === '/'
     }
+    if (path === '/tools') {
+      // Highlight Tools when on /tools or any tool category page
+      const toolPaths = ['/tools', '/gis-tools', '/dev-tools', '/va-tools', '/marketing-tools']
+      return toolPaths.some(toolPath => location.pathname.startsWith(toolPath))
+    }
     return location.pathname.startsWith(path)
   }
 
   const navLinks = [
     { path: '/', label: 'Home' },
-    { path: '/gis-tools', label: 'GIS Tools' },
-    { path: '/dev-tools', label: 'Dev Tools' },
-    { path: '/va-tools', label: 'VA Tools' },
+    { path: '/tools', label: 'Tools' },
   ]
 
   return (

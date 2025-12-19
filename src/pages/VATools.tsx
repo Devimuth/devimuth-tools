@@ -1,5 +1,6 @@
-import { Search, Users } from 'lucide-react'
+import { Search, Users, ArrowLeft } from 'lucide-react'
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import SEOHead from '../components/SEO/SEOHead'
 
 export default function VATools() {
@@ -13,6 +14,13 @@ export default function VATools() {
         keywords="VA tools, virtual assistant, productivity tools, automation"
       />
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <Link
+          to="/tools"
+          className="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mb-4"
+        >
+          <ArrowLeft className="h-3.5 w-3.5" />
+          <span>Back to Tools</span>
+        </Link>
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-3">
             <Users className="h-6 w-6 text-primary-600 dark:text-primary-400" />

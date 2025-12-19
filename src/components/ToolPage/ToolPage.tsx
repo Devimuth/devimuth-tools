@@ -14,12 +14,20 @@ interface ToolPageProps {
 const getCategoryPage = (pathname: string): { path: string; label: string } => {
   const gisTools = ['/coordinate-converter', '/geojson-visualizer', '/bbox-selector', '/distance-area']
   const devTools = ['/json-csv-converter', '/uuid-hash-generator', '/jwt-decoder', '/json-formatter', '/base64-url-encoder', '/diff-viewer']
+  const vaTools: string[] = [] // VA tools will be added here
+  const marketingTools = ['/seo-meta-generator', '/meta-description-generator', '/open-graph-generator', '/schema-markup-generator', '/social-preview-generator', '/keyword-density-analyzer', '/url-shortener']
   
   if (gisTools.includes(pathname)) {
     return { path: '/gis-tools', label: 'GIS Tools' }
   }
   if (devTools.includes(pathname)) {
     return { path: '/dev-tools', label: 'Dev Tools' }
+  }
+  if (vaTools.includes(pathname)) {
+    return { path: '/va-tools', label: 'VA Tools' }
+  }
+  if (marketingTools.includes(pathname)) {
+    return { path: '/marketing-tools', label: 'Marketing Tools' }
   }
   // Default to home if category not found
   return { path: '/', label: 'Home' }

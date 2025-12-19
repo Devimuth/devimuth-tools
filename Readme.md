@@ -1,6 +1,6 @@
 # 🛠️ Devimuth Tools
 
-A comprehensive collection of Geographic Information System (GIS) and Software Development utilities. All tools run directly in your browser—**no data is sent to a server**, ensuring complete privacy and security.
+A comprehensive collection of Geographic Information System (GIS), Software Development, and Marketing utilities. All tools run directly in your browser—**no data is sent to a server**, ensuring complete privacy and security.
 
 ## ✨ Key Features
 
@@ -30,6 +30,16 @@ A comprehensive collection of Geographic Information System (GIS) and Software D
 5. **Base64 & URL Encoder** - Standard encoding utilities for web development
 6. **Diff Viewer** - Compare two blocks of text or code to identify changes
 
+### 📈 Marketing Tools
+
+1. **SEO Meta Tag Generator** - Generate comprehensive SEO meta tags including title, description, Open Graph, and Twitter Cards
+2. **Meta Description Generator** - Create optimized meta descriptions with character count validation and keyword suggestions
+3. **Open Graph Tag Generator** - Generate Open Graph tags for optimal social media sharing previews
+4. **Schema Markup Generator** - Create JSON-LD structured data for articles, products, organizations, and more
+5. **Social Media Preview Generator** - Preview how your content will look on Facebook, Twitter, LinkedIn, and Instagram
+6. **Keyword Density Analyzer** - Analyze keyword frequency and density in your content for SEO optimization
+7. **URL Shortener** - Shorten URLs with custom aliases and generate QR codes. All processing happens client-side
+
 ### 👥 VA Tools
 
 VA Tools section is currently under development.
@@ -52,7 +62,7 @@ Simply visit the tool you need and start using it immediately. No installation, 
 
 ## 👤 About
 
-**Devimuth Tools** - Free, privacy-focused utilities for GIS and software development.
+**Devimuth Tools** - Free, privacy-focused utilities for GIS, software development, and marketing.
 
 Created by [@Devimuth](https://github.com/Devimuth)
 
