@@ -9,7 +9,7 @@ export default function SchemaMarkupGenerator() {
   const [schemaType, setSchemaType] = useState<SchemaType>('Article')
   const [formData, setFormData] = useState<Record<string, any>>({})
   const [generatedJSON, setGeneratedJSON] = useState('')
-  const [validation, setValidation] = useState<{ valid: boolean; error?: string } | null>(null)
+  const [validation, setValidation] = useState<{ valid: boolean; error?: string; warnings?: string[] } | null>(null)
 
   useEffect(() => {
     // Reset form data when schema type changes
@@ -93,6 +93,11 @@ export default function SchemaMarkupGenerator() {
             <option value="BreadcrumbList">Breadcrumb List</option>
             <option value="Event">Event</option>
             <option value="Review">Review</option>
+            <option value="VideoObject">Video Object</option>
+            <option value="Recipe">Recipe</option>
+            <option value="HowTo">How-To</option>
+            <option value="Course">Course</option>
+            <option value="SoftwareApplication">Software Application</option>
           </select>
         </div>
 
@@ -138,17 +143,26 @@ export default function SchemaMarkupGenerator() {
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Generated JSON-LD</h2>
               <div className="flex items-center gap-4">
                 {validation && (
-                  <div className={`flex items-center gap-1 text-sm ${
-                    validation.valid
-                      ? 'text-green-600 dark:text-green-400'
-                      : 'text-red-600 dark:text-red-400'
-                  }`}>
-                    {validation.valid ? (
-                      <CheckCircle className="h-4 w-4" />
-                    ) : (
-                      <AlertCircle className="h-4 w-4" />
+                  <div className="flex flex-col gap-1">
+                    <div className={`flex items-center gap-1 text-sm ${
+                      validation.valid
+                        ? 'text-green-600 dark:text-green-400'
+                        : 'text-red-600 dark:text-red-400'
+                    }`}>
+                      {validation.valid ? (
+                        <CheckCircle className="h-4 w-4" />
+                      ) : (
+                        <AlertCircle className="h-4 w-4" />
+                      )}
+                      <span>{validation.valid ? 'Valid' : validation.error}</span>
+                    </div>
+                    {validation.warnings && validation.warnings.length > 0 && (
+                      <div className="text-xs text-yellow-600 dark:text-yellow-400">
+                        {validation.warnings.map((warning, idx) => (
+                          <div key={idx}>⚠ {warning}</div>
+                        ))}
+                      </div>
                     )}
-                    <span>{validation.valid ? 'Valid' : validation.error}</span>
                   </div>
                 )}
                 <div className="flex gap-2">

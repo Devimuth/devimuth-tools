@@ -3,7 +3,7 @@ import ToolPage from '../../components/ToolPage/ToolPage'
 import { Copy, Download, RefreshCw, CheckCircle, AlertCircle } from 'lucide-react'
 import { copyToClipboard } from '../../utils/copyToClipboard'
 import toast from 'react-hot-toast'
-import { generateDescriptionVariations, extractKeywords, type DescriptionOptions } from '../../utils/marketing/descriptionGenerator'
+import { generateDescriptionVariations, extractKeywords, calculateReadabilityScore, analyzeSentiment, type DescriptionOptions } from '../../utils/marketing/descriptionGenerator'
 import { validateDescriptionLength } from '../../utils/marketing/seoTemplates'
 
 export default function MetaDescriptionGenerator() {
@@ -45,6 +45,8 @@ export default function MetaDescriptionGenerator() {
   }, [content, keywords, tone])
 
   const validation = selectedVariation ? validateDescriptionLength(selectedVariation) : null
+  const readabilityScore = selectedVariation ? calculateReadabilityScore(selectedVariation) : null
+  const sentiment = selectedVariation ? analyzeSentiment(selectedVariation) : null
 
   const handleCopy = () => {
     if (selectedVariation) {
@@ -252,22 +254,46 @@ export default function MetaDescriptionGenerator() {
             <div className="p-4 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md">
               <p className="text-gray-800 dark:text-gray-200 mb-2">{selectedVariation}</p>
               
-              {validation && (
-                <div className={`mt-2 text-sm flex items-center gap-2 ${
-                  validation.valid
-                    ? 'text-green-600 dark:text-green-400'
-                    : validation.length < 120
-                    ? 'text-red-600 dark:text-red-400'
-                    : 'text-yellow-600 dark:text-yellow-400'
-                }`}>
-                  {validation.valid ? (
-                    <CheckCircle className="h-4 w-4" />
-                  ) : (
-                    <AlertCircle className="h-4 w-4" />
-                  )}
-                  <span>{validation.length} characters - {validation.message}</span>
-                </div>
-              )}
+              <div className="mt-3 space-y-2">
+                {validation && (
+                  <div className={`text-sm flex items-center gap-2 ${
+                    validation.valid
+                      ? 'text-green-600 dark:text-green-400'
+                      : validation.length < 120
+                      ? 'text-red-600 dark:text-red-400'
+                      : 'text-yellow-600 dark:text-yellow-400'
+                  }`}>
+                    {validation.valid ? (
+                      <CheckCircle className="h-4 w-4" />
+                    ) : (
+                      <AlertCircle className="h-4 w-4" />
+                    )}
+                    <span>{validation.length} characters - {validation.message}</span>
+                  </div>
+                )}
+                
+                {readabilityScore !== null && (
+                  <div className="text-sm text-gray-600 dark:text-gray-400">
+                    <span className="font-medium">Readability Score:</span> {readabilityScore}/100
+                    <span className="ml-2 text-xs">
+                      ({readabilityScore >= 60 ? 'Easy to read' : readabilityScore >= 30 ? 'Moderate' : 'Difficult'})
+                    </span>
+                  </div>
+                )}
+                
+                {sentiment && (
+                  <div className="text-sm text-gray-600 dark:text-gray-400">
+                    <span className="font-medium">Sentiment:</span> 
+                    <span className={`ml-2 ${
+                      sentiment.sentiment === 'positive' ? 'text-green-600 dark:text-green-400' :
+                      sentiment.sentiment === 'negative' ? 'text-red-600 dark:text-red-400' :
+                      'text-gray-600 dark:text-gray-400'
+                    }`}>
+                      {sentiment.sentiment.charAt(0).toUpperCase() + sentiment.sentiment.slice(1)} ({sentiment.score > 0 ? '+' : ''}{sentiment.score})
+                    </span>
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="p-4 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md">

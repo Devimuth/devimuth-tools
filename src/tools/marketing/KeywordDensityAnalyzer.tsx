@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import ToolPage from '../../components/ToolPage/ToolPage'
-import { Copy, Download, BarChart3 } from 'lucide-react'
+import { Copy, Download, BarChart3, TrendingUp, Lightbulb } from 'lucide-react'
 import { copyToClipboard } from '../../utils/copyToClipboard'
 import toast from 'react-hot-toast'
 import { analyzeKeywordDensity, analyzeNGrams, type AnalysisResult } from '../../utils/marketing/keywordAnalysis'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 
 export default function KeywordDensityAnalyzer() {
   const [text, setText] = useState('')
@@ -52,6 +53,9 @@ export default function KeywordDensityAnalyzer() {
       averageSentenceLength: analysis.averageSentenceLength,
       topKeywords: analysis.topKeywords,
       ngrams: ngrams,
+      readability: analysis.readability,
+      seoScore: analysis.seoScore,
+      keywordSuggestions: analysis.keywordSuggestions,
     }
 
     const json = JSON.stringify(data, null, 2)
@@ -66,6 +70,49 @@ export default function KeywordDensityAnalyzer() {
     URL.revokeObjectURL(url)
     toast.success('Analysis downloaded!')
   }
+
+  const handleExportCSV = () => {
+    if (!analysis) {
+      toast.error('No analysis to export')
+      return
+    }
+
+    const csv = [
+      ['Keyword', 'Count', 'Density (%)'].join(','),
+      ...analysis.topKeywords.map(k => [k.word, k.count, k.density.toFixed(2)].join(','))
+    ].join('\n')
+
+    const blob = new Blob([csv], { type: 'text/csv' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = 'keyword-analysis.csv'
+    link.click()
+    URL.revokeObjectURL(url)
+    toast.success('CSV exported!')
+  }
+
+  const getReadabilityLevel = (score: number): { level: string; color: string } => {
+    if (score >= 90) return { level: 'Very Easy', color: 'text-green-600 dark:text-green-400' }
+    if (score >= 80) return { level: 'Easy', color: 'text-green-500 dark:text-green-500' }
+    if (score >= 70) return { level: 'Fairly Easy', color: 'text-blue-500 dark:text-blue-400' }
+    if (score >= 60) return { level: 'Standard', color: 'text-yellow-500 dark:text-yellow-400' }
+    if (score >= 50) return { level: 'Fairly Difficult', color: 'text-orange-500 dark:text-orange-400' }
+    if (score >= 30) return { level: 'Difficult', color: 'text-red-500 dark:text-red-400' }
+    return { level: 'Very Difficult', color: 'text-red-600 dark:text-red-500' }
+  }
+
+  const getSEOScoreColor = (score: number): string => {
+    if (score >= 80) return 'text-green-600 dark:text-green-400'
+    if (score >= 60) return 'text-yellow-600 dark:text-yellow-400'
+    return 'text-red-600 dark:text-red-400'
+  }
+
+  const chartData = analysis?.topKeywords.slice(0, 10).map(k => ({
+    keyword: k.word.length > 15 ? k.word.substring(0, 15) + '...' : k.word,
+    count: k.count,
+    density: parseFloat(k.density.toFixed(2))
+  })) || []
 
   return (
     <ToolPage
@@ -143,14 +190,88 @@ export default function KeywordDensityAnalyzer() {
                   Copy
                 </button>
                 <button
+                  onClick={handleExportCSV}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md flex items-center gap-2 text-sm transition-colors"
+                >
+                  <Download className="h-4 w-4" />
+                  Export CSV
+                </button>
+                <button
                   onClick={handleDownload}
                   className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md flex items-center gap-2 text-sm transition-colors"
                 >
                   <Download className="h-4 w-4" />
-                  Download
+                  Download JSON
                 </button>
               </div>
             </div>
+
+            {/* SEO Score */}
+            {analysis.seoScore !== undefined && (
+              <div className="p-4 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 border border-purple-200 dark:border-purple-800 rounded-md">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">SEO Content Score</p>
+                    <p className={`text-4xl font-bold ${getSEOScoreColor(analysis.seoScore)}`}>
+                      {analysis.seoScore}/100
+                    </p>
+                  </div>
+                  <TrendingUp className={`h-12 w-12 ${getSEOScoreColor(analysis.seoScore)}`} />
+                </div>
+              </div>
+            )}
+
+            {/* Readability Metrics */}
+            {analysis.readability && (
+              <div className="p-4 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md">
+                <h3 className="text-md font-semibold text-gray-900 dark:text-white mb-3">Readability Metrics</h3>
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                  <div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Flesch Reading Ease</p>
+                    <p className="text-lg font-bold text-gray-900 dark:text-white">{analysis.readability.fleschReadingEase}</p>
+                    <p className={`text-xs ${getReadabilityLevel(analysis.readability.fleschReadingEase).color}`}>
+                      {getReadabilityLevel(analysis.readability.fleschReadingEase).level}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Flesch-Kincaid</p>
+                    <p className="text-lg font-bold text-gray-900 dark:text-white">Grade {analysis.readability.fleschKincaid}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">SMOG Index</p>
+                    <p className="text-lg font-bold text-gray-900 dark:text-white">{analysis.readability.smogIndex}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Coleman-Liau</p>
+                    <p className="text-lg font-bold text-gray-900 dark:text-white">Grade {analysis.readability.colemanLiau}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">ARI</p>
+                    <p className="text-lg font-bold text-gray-900 dark:text-white">Grade {analysis.readability.automatedReadability}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Keyword Suggestions */}
+            {analysis.keywordSuggestions && analysis.keywordSuggestions.length > 0 && (
+              <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md">
+                <div className="flex items-center gap-2 mb-2">
+                  <Lightbulb className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                  <h3 className="text-md font-semibold text-gray-900 dark:text-white">Keyword Suggestions</h3>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {analysis.keywordSuggestions.map((suggestion, index) => (
+                    <span
+                      key={index}
+                      className="px-2 py-1 bg-white dark:bg-gray-800 text-sm text-gray-700 dark:text-gray-300 rounded border border-blue-200 dark:border-blue-700"
+                    >
+                      {suggestion}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="p-4 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md">
@@ -170,6 +291,34 @@ export default function KeywordDensityAnalyzer() {
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">{analysis.averageSentenceLength}</p>
               </div>
             </div>
+
+            {/* Keyword Distribution Chart */}
+            {chartData.length > 0 && (
+              <div className="p-4 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md">
+                <h3 className="text-md font-semibold text-gray-900 dark:text-white mb-4">Top 10 Keywords Distribution</h3>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={chartData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                    <XAxis 
+                      dataKey="keyword" 
+                      angle={-45} 
+                      textAnchor="end" 
+                      height={100}
+                      tick={{ fill: '#6b7280', fontSize: 12 }}
+                    />
+                    <YAxis tick={{ fill: '#6b7280', fontSize: 12 }} />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: '#f9fafb', 
+                        border: '1px solid #e5e7eb',
+                        borderRadius: '6px'
+                      }}
+                    />
+                    <Bar dataKey="count" fill="#9333ea" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            )}
 
             {/* Top Keywords Table */}
             <div>

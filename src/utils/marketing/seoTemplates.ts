@@ -9,6 +9,7 @@ export interface SEOMetaData {
   canonicalUrl: string
   robots: string
   viewport: string
+  language?: string
   ogTitle?: string
   ogDescription?: string
   ogImage?: string
@@ -16,10 +17,17 @@ export interface SEOMetaData {
   ogType?: string
   ogSiteName?: string
   ogLocale?: string
+  ogImageWidth?: string
+  ogImageHeight?: string
+  ogVideo?: string
+  ogAudio?: string
   twitterCard?: string
   twitterTitle?: string
   twitterDescription?: string
   twitterImage?: string
+  twitterSite?: string
+  twitterCreator?: string
+  twitterImageAlt?: string
 }
 
 /**
@@ -54,6 +62,11 @@ export function generateSEOMetaTags(data: SEOMetaData): string {
     tags.push(`<meta name="viewport" content="${escapeHtml(data.viewport)}">`)
   }
 
+  if (data.language) {
+    tags.push(`<meta http-equiv="content-language" content="${escapeHtml(data.language)}">`)
+    tags.push(`<html lang="${escapeHtml(data.language)}">`)
+  }
+
   // Open Graph tags
   if (data.ogTitle || data.title) {
     tags.push(`<meta property="og:title" content="${escapeHtml(data.ogTitle || data.title)}">`)
@@ -65,6 +78,20 @@ export function generateSEOMetaTags(data: SEOMetaData): string {
 
   if (data.ogImage) {
     tags.push(`<meta property="og:image" content="${escapeHtml(data.ogImage)}">`)
+    if (data.ogImageWidth) {
+      tags.push(`<meta property="og:image:width" content="${escapeHtml(data.ogImageWidth)}">`)
+    }
+    if (data.ogImageHeight) {
+      tags.push(`<meta property="og:image:height" content="${escapeHtml(data.ogImageHeight)}">`)
+    }
+  }
+
+  if (data.ogVideo) {
+    tags.push(`<meta property="og:video" content="${escapeHtml(data.ogVideo)}">`)
+  }
+
+  if (data.ogAudio) {
+    tags.push(`<meta property="og:audio" content="${escapeHtml(data.ogAudio)}">`)
   }
 
   if (data.ogUrl || data.canonicalUrl) {
@@ -100,6 +127,82 @@ export function generateSEOMetaTags(data: SEOMetaData): string {
     tags.push(`<meta name="twitter:image" content="${escapeHtml(data.twitterImage)}">`)
   }
 
+  if (data.twitterSite) {
+    tags.push(`<meta name="twitter:site" content="${escapeHtml(data.twitterSite)}">`)
+  }
+
+  if (data.twitterCreator) {
+    tags.push(`<meta name="twitter:creator" content="${escapeHtml(data.twitterCreator)}">`)
+  }
+
+  if (data.twitterImageAlt) {
+    tags.push(`<meta name="twitter:image:alt" content="${escapeHtml(data.twitterImageAlt)}">`)
+  }
+
+  return tags.join('\n')
+}
+
+/**
+ * Generate React/Next.js format
+ */
+export function generateReactFormat(data: SEOMetaData): string {
+  const tags: string[] = []
+  
+  tags.push(`<title>${escapeHtml(data.title)}</title>`)
+  if (data.description) {
+    tags.push(`<meta name="description" content="${escapeHtml(data.description)}" />`)
+  }
+  if (data.keywords) {
+    tags.push(`<meta name="keywords" content="${escapeHtml(data.keywords)}" />`)
+  }
+  
+  // Open Graph
+  if (data.ogTitle || data.title) {
+    tags.push(`<meta property="og:title" content="${escapeHtml(data.ogTitle || data.title)}" />`)
+  }
+  if (data.ogDescription || data.description) {
+    tags.push(`<meta property="og:description" content="${escapeHtml(data.ogDescription || data.description)}" />`)
+  }
+  if (data.ogImage) {
+    tags.push(`<meta property="og:image" content="${escapeHtml(data.ogImage)}" />`)
+  }
+  
+  // Twitter
+  if (data.twitterCard) {
+    tags.push(`<meta name="twitter:card" content="${escapeHtml(data.twitterCard)}" />`)
+  }
+  
+  return tags.join('\n')
+}
+
+/**
+ * Generate Next.js Head format
+ */
+export function generateNextJSFormat(data: SEOMetaData): string {
+  const tags: string[] = []
+  
+  tags.push(`<Head>`)
+  tags.push(`  <title>${escapeHtml(data.title)}</title>`)
+  if (data.description) {
+    tags.push(`  <meta name="description" content="${escapeHtml(data.description)}" />`)
+  }
+  if (data.keywords) {
+    tags.push(`  <meta name="keywords" content="${escapeHtml(data.keywords)}" />`)
+  }
+  if (data.ogTitle || data.title) {
+    tags.push(`  <meta property="og:title" content="${escapeHtml(data.ogTitle || data.title)}" />`)
+  }
+  if (data.ogDescription || data.description) {
+    tags.push(`  <meta property="og:description" content="${escapeHtml(data.ogDescription || data.description)}" />`)
+  }
+  if (data.ogImage) {
+    tags.push(`  <meta property="og:image" content="${escapeHtml(data.ogImage)}" />`)
+  }
+  if (data.twitterCard) {
+    tags.push(`  <meta name="twitter:card" content="${escapeHtml(data.twitterCard)}" />`)
+  }
+  tags.push(`</Head>`)
+  
   return tags.join('\n')
 }
 

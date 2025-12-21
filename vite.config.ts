@@ -8,6 +8,12 @@ export default defineConfig(({ command }) => ({
   build: {
     outDir: 'dist',
     sourcemap: false,
+    commonjsOptions: {
+      include: [/qrcode.react/, /node_modules/],
+    },
+  },
+  optimizeDeps: {
+    include: ['qrcode.react'],
   },
 }))
 

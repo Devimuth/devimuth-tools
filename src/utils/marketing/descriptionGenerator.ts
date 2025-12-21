@@ -163,8 +163,68 @@ function truncateToLength(text: string, maxLength: number): string {
  * Apply tone to description
  */
 function applyTone(description: string, tone: string): string {
-  // For now, just return as-is. Could add tone-specific modifications
+  if (tone === 'formal') {
+    // Remove contractions, use more formal language
+    return description
+      .replace(/\bdon't\b/gi, 'do not')
+      .replace(/\bcan't\b/gi, 'cannot')
+      .replace(/\bwon't\b/gi, 'will not')
+      .replace(/\bit's\b/gi, 'it is')
+      .replace(/\bthat's\b/gi, 'that is')
+  } else if (tone === 'casual') {
+    // Add more casual language
+    return description
+      .replace(/\bdiscover\b/gi, 'check out')
+      .replace(/\blearn more\b/gi, 'find out more')
+  } else if (tone === 'friendly') {
+    // Keep friendly but professional
+    return description
+  }
+  // Professional - default, no changes needed
   return description
+}
+
+/**
+ * Calculate readability score (Flesch Reading Ease approximation)
+ */
+export function calculateReadabilityScore(text: string): number {
+  const words = text.split(/\s+/).filter(w => w.length > 0)
+  const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0)
+  
+  if (words.length === 0 || sentences.length === 0) return 0
+  
+  const avgSentenceLength = words.length / sentences.length
+  const avgWordLength = words.reduce((sum, w) => sum + w.length, 0) / words.length
+  
+  // Simplified Flesch Reading Ease
+  const score = 206.835 - (1.015 * avgSentenceLength) - (84.6 * avgWordLength)
+  return Math.max(0, Math.min(100, Math.round(score)))
+}
+
+/**
+ * Analyze sentiment (simple positive/negative/neutral)
+ */
+export function analyzeSentiment(text: string): { sentiment: 'positive' | 'neutral' | 'negative'; score: number } {
+  const positiveWords = ['great', 'excellent', 'amazing', 'best', 'perfect', 'wonderful', 'fantastic', 'love', 'awesome', 'outstanding']
+  const negativeWords = ['bad', 'terrible', 'awful', 'worst', 'hate', 'poor', 'disappointing', 'frustrating', 'difficult', 'problem']
+  
+  const words = text.toLowerCase().split(/\s+/)
+  let positive = 0
+  let negative = 0
+  
+  words.forEach(word => {
+    if (positiveWords.some(pw => word.includes(pw))) positive++
+    if (negativeWords.some(nw => word.includes(nw))) negative++
+  })
+  
+  const total = positive + negative
+  if (total === 0) return { sentiment: 'neutral', score: 0 }
+  
+  const score = ((positive - negative) / total) * 100
+  
+  if (score > 20) return { sentiment: 'positive', score: Math.round(score) }
+  if (score < -20) return { sentiment: 'negative', score: Math.round(score) }
+  return { sentiment: 'neutral', score: Math.round(score) }
 }
 
 /**

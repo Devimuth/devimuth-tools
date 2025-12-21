@@ -69,16 +69,26 @@ export function validateURL(url: string): { valid: boolean; error?: string } {
   }
 }
 
+export interface URLMapping {
+  url: string
+  createdAt: string
+  clicks: number
+  expiresAt?: string
+  password?: string
+}
+
 /**
  * Store URL mapping in localStorage
  */
-export function storeURLMapping(shortCode: string, originalUrl: string): void {
+export function storeURLMapping(shortCode: string, originalUrl: string, data?: Partial<URLMapping>): void {
   try {
     const mappings = getURLMappings()
+    const existing = mappings[shortCode]
     mappings[shortCode] = {
       url: originalUrl,
-      createdAt: new Date().toISOString(),
-      clicks: 0,
+      createdAt: existing?.createdAt || new Date().toISOString(),
+      clicks: existing?.clicks || 0,
+      ...data,
     }
     localStorage.setItem('devimuth_marketing_url_mappings', JSON.stringify(mappings))
   } catch (error) {
@@ -89,11 +99,21 @@ export function storeURLMapping(shortCode: string, originalUrl: string): void {
 /**
  * Get URL from short code
  */
-export function getURLFromCode(shortCode: string): string | null {
+export function getURLFromCode(shortCode: string, password?: string): string | null {
   try {
     const mappings = getURLMappings()
     const mapping = mappings[shortCode]
     if (mapping) {
+      // Check expiration
+      if (mapping.expiresAt && new Date(mapping.expiresAt) < new Date()) {
+        return null // URL expired
+      }
+      
+      // Check password
+      if (mapping.password && mapping.password !== password) {
+        return null // Wrong password
+      }
+      
       // Increment click count
       mapping.clicks++
       localStorage.setItem('devimuth_marketing_url_mappings', JSON.stringify(mappings))
@@ -109,12 +129,27 @@ export function getURLFromCode(shortCode: string): string | null {
 /**
  * Get all URL mappings
  */
-export function getURLMappings(): Record<string, { url: string; createdAt: string; clicks: number }> {
+export function getURLMappings(): Record<string, URLMapping> {
   try {
     const stored = localStorage.getItem('devimuth_marketing_url_mappings')
     return stored ? JSON.parse(stored) : {}
   } catch {
     return {}
+  }
+}
+
+/**
+ * Update URL mapping
+ */
+export function updateURLMapping(shortCode: string, updates: Partial<URLMapping>): void {
+  try {
+    const mappings = getURLMappings()
+    if (mappings[shortCode]) {
+      mappings[shortCode] = { ...mappings[shortCode], ...updates }
+      localStorage.setItem('devimuth_marketing_url_mappings', JSON.stringify(mappings))
+    }
+  } catch (error) {
+    console.error('Failed to update URL mapping:', error)
   }
 }
 

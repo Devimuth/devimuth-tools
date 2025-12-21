@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import ToolPage from '../../components/ToolPage/ToolPage'
-import { Copy, Download, Image as ImageIcon } from 'lucide-react'
+import { Copy, Download, Image as ImageIcon, Eye, Facebook, Twitter, Linkedin } from 'lucide-react'
 import { copyToClipboard } from '../../utils/copyToClipboard'
 import toast from 'react-hot-toast'
 
@@ -16,6 +16,7 @@ export default function OpenGraphGenerator() {
   })
   const [generatedHTML, setGeneratedHTML] = useState('')
   const [imageError, setImageError] = useState(false)
+  const [showMultiPreview, setShowMultiPreview] = useState(false)
 
   useEffect(() => {
     if (ogData.title || ogData.description) {
@@ -241,6 +242,166 @@ export default function OpenGraphGenerator() {
             )}
           </div>
         </div>
+
+        {/* Multi-Platform Preview */}
+        {generatedHTML && (
+          <div className="p-4 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Platform Previews</h2>
+              <button
+                onClick={() => setShowMultiPreview(!showMultiPreview)}
+                className="px-3 py-1 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-md flex items-center gap-1 transition-colors"
+              >
+                <Eye className="h-4 w-4" />
+                {showMultiPreview ? 'Hide' : 'Show'} Multi-Platform Preview
+              </button>
+            </div>
+            {showMultiPreview && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Facebook Preview */}
+                <div className="bg-[#1877f2] rounded-lg p-3 shadow-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Facebook className="h-4 w-4 text-white" />
+                    <span className="text-xs text-white font-medium">Facebook</span>
+                  </div>
+                  <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden">
+                    {ogData.image && !imageError ? (
+                      <div className="w-full aspect-video bg-gray-200 dark:bg-gray-700 relative">
+                        <img
+                          src={ogData.image}
+                          alt="Preview"
+                          onError={handleImageError}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div className="w-full aspect-video bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                        <ImageIcon className="h-8 w-8 text-gray-400" />
+                      </div>
+                    )}
+                    <div className="p-2 space-y-1">
+                      {ogData.url && (
+                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                          {(() => {
+                            try {
+                              return new URL(ogData.url).hostname
+                            } catch {
+                              return ogData.url
+                            }
+                          })()}
+                        </p>
+                      )}
+                      {ogData.title && (
+                        <h3 className="font-semibold text-gray-900 dark:text-white text-sm line-clamp-2">
+                          {ogData.title}
+                        </h3>
+                      )}
+                      {ogData.description && (
+                        <p className="text-xs text-gray-600 dark:text-gray-300 line-clamp-2">
+                          {ogData.description}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Twitter Preview */}
+                <div className="bg-black dark:bg-gray-800 rounded-lg p-3 shadow-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Twitter className="h-4 w-4 text-white" />
+                    <span className="text-xs text-white font-medium">Twitter/X</span>
+                  </div>
+                  <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden">
+                    {ogData.image && !imageError ? (
+                      <div className="w-full aspect-video bg-gray-200 dark:bg-gray-700 relative">
+                        <img
+                          src={ogData.image}
+                          alt="Preview"
+                          onError={handleImageError}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div className="w-full aspect-video bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                        <ImageIcon className="h-8 w-8 text-gray-400" />
+                      </div>
+                    )}
+                    <div className="p-2 space-y-1">
+                      {ogData.url && (
+                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                          {(() => {
+                            try {
+                              return new URL(ogData.url).hostname
+                            } catch {
+                              return ogData.url
+                            }
+                          })()}
+                        </p>
+                      )}
+                      {ogData.title && (
+                        <h3 className="font-semibold text-gray-900 dark:text-white text-sm line-clamp-2">
+                          {ogData.title}
+                        </h3>
+                      )}
+                      {ogData.description && (
+                        <p className="text-xs text-gray-600 dark:text-gray-300 line-clamp-2">
+                          {ogData.description}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* LinkedIn Preview */}
+                <div className="bg-[#0a66c2] rounded-lg p-3 shadow-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Linkedin className="h-4 w-4 text-white" />
+                    <span className="text-xs text-white font-medium">LinkedIn</span>
+                  </div>
+                  <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden">
+                    {ogData.image && !imageError ? (
+                      <div className="w-full aspect-video bg-gray-200 dark:bg-gray-700 relative">
+                        <img
+                          src={ogData.image}
+                          alt="Preview"
+                          onError={handleImageError}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div className="w-full aspect-video bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                        <ImageIcon className="h-8 w-8 text-gray-400" />
+                      </div>
+                    )}
+                    <div className="p-2 space-y-1">
+                      {ogData.url && (
+                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                          {(() => {
+                            try {
+                              return new URL(ogData.url).hostname
+                            } catch {
+                              return ogData.url
+                            }
+                          })()}
+                        </p>
+                      )}
+                      {ogData.title && (
+                        <h3 className="font-semibold text-gray-900 dark:text-white text-sm line-clamp-2">
+                          {ogData.title}
+                        </h3>
+                      )}
+                      {ogData.description && (
+                        <p className="text-xs text-gray-600 dark:text-gray-300 line-clamp-2">
+                          {ogData.description}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Generated HTML */}
         {generatedHTML && (

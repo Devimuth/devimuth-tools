@@ -23,7 +23,10 @@
     "react-hot-toast": "^2.4.1",
     "react-leaflet": "^4.2.1",
     "react-router-dom": "^6.20.0",
-    "uuid": "^13.0.0"
+    "uuid": "^13.0.0",
+    "qrcode.react": "^3.1.0",
+    "recharts": "^2.10.3",
+    "html2canvas": "^1.4.1"
   },
   "devDependencies": {
     "@types/diff-match-patch": "^1.0.36",
