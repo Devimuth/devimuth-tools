@@ -1,10 +1,38 @@
-import { Search, Users, ArrowLeft } from 'lucide-react'
+import { Search, Users, ArrowLeft, Keyboard, ClipboardList, MessageSquare } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import SEOHead from '../components/SEO/SEOHead'
+import ToolCard from '../components/ToolCard/ToolCard'
+
+const vaTools = [
+  {
+    title: 'Typing Test',
+    description: 'Measure your typing speed (WPM) and accuracy with customizable test durations and text samples.',
+    icon: Keyboard,
+    path: '/typing-test',
+  },
+  {
+    title: 'Skills Assessment Generator',
+    description: 'Create customizable assessment forms for evaluating virtual assistant skills with multiple question types.',
+    icon: ClipboardList,
+    path: '/skills-assessment-generator',
+  },
+  {
+    title: 'Communication Test',
+    description: 'Test your professional communication skills by responding to email scenarios. Get instant feedback on grammar, tone, clarity, and appropriateness.',
+    icon: MessageSquare,
+    path: '/communication-test',
+  },
+]
 
 export default function VATools() {
   const [searchQuery, setSearchQuery] = useState('')
+
+  const filteredTools = vaTools.filter(
+    (tool) =>
+      tool.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      tool.description.toLowerCase().includes(searchQuery.toLowerCase())
+  )
 
   return (
     <>
@@ -45,16 +73,31 @@ export default function VATools() {
           />
         </div>
 
-        {/* Placeholder Content */}
-        <div className="bg-gray-50 dark:bg-gray-800 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700 p-12 text-center">
-          <Users className="h-16 w-16 text-gray-400 dark:text-gray-600 mx-auto mb-4" />
-          <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">
-            Coming Soon
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
-            VA tools are currently under development. Check back soon for productivity and automation utilities.
-          </p>
-        </div>
+        {/* Tools Grid */}
+        {filteredTools.length === 0 ? (
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700 p-12 text-center">
+            <Users className="h-16 w-16 text-gray-400 dark:text-gray-600 mx-auto mb-4" />
+            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">
+              No tools found
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
+              Try adjusting your search query to find the tool you're looking for.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredTools.map((tool) => (
+              <ToolCard
+                key={tool.path}
+                title={tool.title}
+                description={tool.description}
+                icon={tool.icon}
+                path={tool.path}
+                category="va"
+              />
+            ))}
+          </div>
+        )}
       </div>
     </>
   )

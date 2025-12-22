@@ -23,6 +23,9 @@ import SchemaMarkupGenerator from './tools/marketing/SchemaMarkupGenerator'
 import SocialPreviewGenerator from './tools/marketing/SocialPreviewGenerator'
 import KeywordDensityAnalyzer from './tools/marketing/KeywordDensityAnalyzer'
 import URLShortener from './tools/marketing/URLShortener'
+import TypingTest from './tools/va/TypingTest'
+import SkillsAssessmentGenerator from './tools/va/SkillsAssessmentGenerator'
+import CommunicationTest from './tools/va/CommunicationTest'
 
 function App() {
   return (
@@ -52,6 +55,9 @@ function App() {
           <Route path="/social-preview-generator" element={<SocialPreviewGenerator />} />
           <Route path="/keyword-density-analyzer" element={<KeywordDensityAnalyzer />} />
           <Route path="/url-shortener" element={<URLShortener />} />
+          <Route path="/typing-test" element={<TypingTest />} />
+          <Route path="/skills-assessment-generator" element={<SkillsAssessmentGenerator />} />
+          <Route path="/communication-test" element={<CommunicationTest />} />
         </Routes>
       </Layout>
     </BrowserRouter>

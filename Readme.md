@@ -42,7 +42,9 @@ A comprehensive collection of Geographic Information System (GIS), Software Deve
 
 ### 👥 VA Tools
 
-VA Tools section is currently under development.
+1. **Typing Test** - Measure your typing speed (WPM) and accuracy with customizable test durations and text samples. Track your progress with test history and export results
+2. **Skills Assessment Generator** - Create customizable assessment forms for evaluating virtual assistant skills with multiple question types (multiple-choice, text input, rating scales, yes/no). Share assessments via links
+3. **Communication Test** - Test your professional communication skills by responding to email scenarios. Get instant feedback on grammar, tone, clarity, and appropriateness with detailed scoring
 
 ## 🔒 Privacy & Security
 

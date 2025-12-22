@@ -14,7 +14,7 @@ interface ToolPageProps {
 const getCategoryPage = (pathname: string): { path: string; label: string } => {
   const gisTools = ['/coordinate-converter', '/geojson-visualizer', '/bbox-selector', '/distance-area']
   const devTools = ['/json-csv-converter', '/uuid-hash-generator', '/jwt-decoder', '/json-formatter', '/base64-url-encoder', '/diff-viewer']
-  const vaTools: string[] = [] // VA tools will be added here
+  const vaTools = ['/typing-test', '/skills-assessment-generator', '/communication-test']
   const marketingTools = ['/seo-meta-generator', '/meta-description-generator', '/open-graph-generator', '/schema-markup-generator', '/social-preview-generator', '/keyword-density-analyzer', '/url-shortener']
   
   if (gisTools.includes(pathname)) {
